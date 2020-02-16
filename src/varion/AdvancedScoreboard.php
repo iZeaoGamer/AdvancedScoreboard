@@ -30,6 +30,9 @@ class AdvancedScoreboard extends PluginBase{
 
 	public function onEnable() : void{
 		static::$plugin = $this;
+		$this->tokens = $this->getServer()->getPluginManager()->getPlugin("TokensAPI");
+		$this->voting = $this->plugin->getServer()->getPluginManager()->getPlugin("BetterVoting");
+$this->votes = new Config($this->voting->getDataFolder() . "voteinfo.yml", Config::YAML);
 		$this->saveDefaultConfig();
 		$this->getServer()->getPluginManager()->registerEvents(new LevelChangeEvent($this), $this);
 		$this->getScheduler()->scheduleRepeatingTask(new AdvancedTask($this), $this->getConfig()->get("interval-time", 20));
@@ -193,7 +196,10 @@ class AdvancedScoreboard extends PluginBase{
         $message = str_replace('{ONLINE}', count($this->getServer()->getOnlinePlayers()), $message);
         $message = str_replace('{MAX_ONLINE}', $player->getServer()->getMaxPlayers(), $message);
         $message = str_replace("{DATE}", date("H:i a"), $message);
+	$message = str_replace("{votes_left}", $this->votes->get("votes"), $message);
         $message = str_replace("{RANDOMCOLOR}", $this->getColor(), $message);
+	$message = str_replace("{tokens}", $this->tokens->myTokens($player), $message);
+	
         $message = $this->reviewAllPlugins($player, $message);
         return TF::colorize((string) $message);
     }
